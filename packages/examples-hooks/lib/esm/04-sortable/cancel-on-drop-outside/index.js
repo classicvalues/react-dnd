@@ -1,0 +1,60 @@
+import React from 'react';
+import { __EXPERIMENTAL_DND_HOOKS_THAT_MAY_CHANGE_AND_BREAK_MY_BUILD__ } from 'react-dnd';
+import Card from './Card';
+import update from 'immutability-helper';
+import ItemTypes from './ItemTypes';
+const { useDrop, } = __EXPERIMENTAL_DND_HOOKS_THAT_MAY_CHANGE_AND_BREAK_MY_BUILD__;
+const style = {
+    width: 400,
+};
+const ITEMS = [
+    {
+        id: 1,
+        text: 'Write a cool JS library',
+    },
+    {
+        id: 2,
+        text: 'Make it generic enough',
+    },
+    {
+        id: 3,
+        text: 'Write README',
+    },
+    {
+        id: 4,
+        text: 'Create some examples',
+    },
+    {
+        id: 5,
+        text: 'Spam in Twitter and IRC to promote it',
+    },
+    {
+        id: 6,
+        text: '???',
+    },
+    {
+        id: 7,
+        text: 'PROFIT',
+    },
+];
+const Container = () => {
+    const [cards, setCards] = React.useState(ITEMS);
+    const moveCard = (id, atIndex) => {
+        const { card, index } = findCard(id);
+        setCards(update(cards, {
+            $splice: [[index, 1], [atIndex, 0, card]],
+        }));
+    };
+    const findCard = (id) => {
+        const card = cards.filter(c => `${c.id}` === id)[0];
+        return {
+            card,
+            index: cards.indexOf(card),
+        };
+    };
+    const [, drop] = useDrop({ accept: ItemTypes.CARD });
+    return (React.createElement(React.Fragment, null,
+        React.createElement("h1", null, "EXPERIMENTAL API"),
+        React.createElement("div", { ref: drop, style: style }, cards.map(card => (React.createElement(Card, { key: card.id, id: `${card.id}`, text: card.text, moveCard: moveCard, findCard: findCard }))))));
+};
+export default Container;
